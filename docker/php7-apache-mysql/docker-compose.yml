@@ -1,0 +1,35 @@
+version: "2"
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+#    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci # The simple way to override the mysql config.
+
+  web:
+    image: wordpress:php7.0-apache
+    environment:
+      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
+      # PHP_XDEBUG: 1
+      # PHP_XDEBUG_DEFAULT_ENABLE: 1
+      # PHP_XDEBUG_REMOTE_CONNECT_BACK: 0         # This is needed to respect remote.host setting bellow
+      # PHP_XDEBUG_REMOTE_HOST: "10.254.254.254"  # You will also need to 'sudo ifconfig lo0 alias 10.254.254.254'
+    ports:
+      - "8703:80"
+    volumes:
+      - ../../wp-content/:/var/www/html/wp-content
+      - ../../wp-config.php:/var/www/html/wp-config.php
+#      - d4d-unison-sync:/var/www/html:rw # Replace volume to this to use docker-sync for macOS users
+
+  mailhog:
+    image: mailhog/mailhog
+
+# Docker-sync for macOS users
+#volumes:
+#  d4d-unison-sync:
+#    external: true
+
